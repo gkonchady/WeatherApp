@@ -8,9 +8,10 @@
 
 import UIKit
 
-class SettingsViewController: UIViewController, UITextFieldDelegate {
+class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     @IBOutlet var txtLocation: UITextField!
+    @IBOutlet var tblAutoComplete: UITableView!
     
     var placesApiUrl = ""
     var placesApiKey = ""
@@ -29,10 +30,11 @@ class SettingsViewController: UIViewController, UITextFieldDelegate {
             placesApiKey = dict["Places API Key"] as String
         }
         
-        println(placesApiUrl)
-        println(placesApiKey)
-        
         self.txtLocation.delegate = self
+        self.tblAutoComplete.delegate = self
+        self.tblAutoComplete.dataSource = self
+        self.tblAutoComplete.scrollEnabled = true
+        self.tblAutoComplete.hidden = true
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -46,11 +48,34 @@ class SettingsViewController: UIViewController, UITextFieldDelegate {
 
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         self.view.endEditing(true)
+        self.tblAutoComplete.hidden = true
     }
     
     func textFieldShouldReturn(textField:UITextField!) -> Bool {
         txtLocation.resignFirstResponder()
+        self.tblAutoComplete.hidden = true
         return true
     }
+    
+    func textField(textField: UITextField!, shouldChangeCharactersInRange range: NSRange, replacementString string: String!) -> Bool {
+        var txtAfterUpdate: NSString = self.txtLocation.text as NSString
+        self.tblAutoComplete.hidden = false
+        txtAfterUpdate = txtAfterUpdate.stringByReplacingCharactersInRange(range, withString: string)
+        return true
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 0
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        return UITableViewCell()
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+    }
+
+
 }
 
