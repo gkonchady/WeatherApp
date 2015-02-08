@@ -30,8 +30,8 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         }
         
         if let dict = myDict {
-            var weatherApiUrl = dict["Weather API Url"] as String
-            var weatherApiKey = dict["Weather API Key"] as String
+            weatherApiUrl = dict["Weather API Url"] as String
+            weatherApiKey = dict["Weather API Key"] as String
         }
         
         self.lblLocation.text = "Please wait..."

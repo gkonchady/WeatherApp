@@ -11,14 +11,15 @@ import UIKit
 class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
 
     @IBOutlet var txtLocation: UITextField!
-    @IBOutlet var tblAutoComplete: UITableView!
+    let autocompleteTableView = UITableView(frame: CGRectMake(0, 120, 320, 120), style: UITableViewStyle.Plain)
     
     var placesApiUrl = ""
     var placesApiKey = ""
+    var pastPlaces = [""]
+    var autocompletePlaces = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         //Read url and key from your Settings plist file
         var myDict: NSDictionary?
         if let path = NSBundle.mainBundle().pathForResource("Settings", ofType: "plist") {
@@ -31,10 +32,12 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         self.txtLocation.delegate = self
-        self.tblAutoComplete.delegate = self
-        self.tblAutoComplete.dataSource = self
-        self.tblAutoComplete.scrollEnabled = true
-        self.tblAutoComplete.hidden = true
+        autocompleteTableView.delegate = self
+        autocompleteTableView.dataSource = self
+        autocompleteTableView.scrollEnabled = true
+        autocompleteTableView.hidden = true
+        self.view.addSubview(autocompleteTableView)
+        
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -48,34 +51,76 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
 
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         self.view.endEditing(true)
-        self.tblAutoComplete.hidden = true
+        autocompleteTableView.hidden = true
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        txtLocation.text = ""
     }
     
     func textFieldShouldReturn(textField:UITextField!) -> Bool {
         txtLocation.resignFirstResponder()
-        self.tblAutoComplete.hidden = true
+        autocompleteTableView.hidden = true
         return true
     }
     
     func textField(textField: UITextField!, shouldChangeCharactersInRange range: NSRange, replacementString string: String!) -> Bool {
         var txtAfterUpdate: NSString = self.txtLocation.text as NSString
-        self.tblAutoComplete.hidden = false
+        autocompleteTableView.hidden = false
         txtAfterUpdate = txtAfterUpdate.stringByReplacingCharactersInRange(range, withString: string)
+        searchAutoCompleteWithResults(txtAfterUpdate)
         return true
     }
     
+    func searchAutoCompleteWithResults(txtToUpdate:String){
+        //if string length is greater than one
+        if countElements(txtToUpdate) > 1 {
+            var placesUrl = placesApiUrl + txtToUpdate + "&types=geocode&key=" + placesApiKey
+            var url = NSURL(string: placesUrl)
+            let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
+                if let httpRes = response as? NSHTTPURLResponse {
+                    if httpRes.statusCode == 200 {
+                        var dict: NSDictionary! = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
+                        if let predictions = dict["predictions"] as? NSArray {
+                            self.autocompletePlaces.removeAll(keepCapacity: false)
+                            for place in predictions{
+                                var curString = place["description"] as NSString
+                                var myString:NSString! = curString
+                                myString = myString.lowercaseString
+                                var substringRange :NSRange! = myString.rangeOfString(txtToUpdate)
+                                if (substringRange.location  == 0)
+                                {
+                                    self.autocompletePlaces.append(curString)
+                                }
+                            }
+                        }
+                     }
+                } else {
+                    println("error \(error)") // print the error!
+                }
+            }
+            
+            task.resume()
+            autocompleteTableView.reloadData()
+        }
+    }
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return autocompletePlaces.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        let autoCompleteRowIdentifier = "AutoCompleteRowIdentifier"
+        let cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: autoCompleteRowIdentifier)
+        cell.textLabel!.text = autocompletePlaces[indexPath.row]
+        return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
+        let selectedCell : UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
+        txtLocation.text = selectedCell.textLabel!.text
+        autocompleteTableView.hidden = true
+        self.view.endEditing(true)
     }
-
-
 }
 
