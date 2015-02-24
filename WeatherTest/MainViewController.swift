@@ -46,6 +46,10 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
             println("Location services are not enabled");
         }
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        println("view appeared")
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -72,6 +76,16 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         var latitude:String = String(format: "%f", coord.latitude)
         var longitude:String = String(format: "%f", coord.longitude)
         
+        CLGeocoder().reverseGeocodeLocation(locationObj, completionHandler: { (placemarks, error) -> Void in
+            if((error) != nil){
+                println("error:  \(error)")
+            }else{
+                let p = CLPlacemark(placemark: placemarks?[0] as CLPlacemark)
+                self.lblLocation.text = p.subLocality + ", " + p.administrativeArea
+            }
+        })
+
+        
         locationManager.stopUpdatingLocation()
         
         getTemperatureFromLatLong(latitude, lon: longitude)
@@ -88,7 +102,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
                     var tempdict = dict.valueForKey("main") as NSDictionary
                     var temperature  = self.convertKelvinToFahrenheit(tempdict["temp"] as Double)
                     dispatch_async(dispatch_get_main_queue()){
-                        self.lblLocation.text = dict.valueForKey("name") as? String
+                        //self.lblLocation.text = dict.valueForKey("name") as? String
                         self.lblTemperature.text = temperature
                         self.lblLastUpdated.text = self.getTimestamp()
                     }

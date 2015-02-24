@@ -88,7 +88,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
                                 var myString:NSString! = curString
                                 myString = myString.lowercaseString
                                 var substringRange :NSRange! = myString.rangeOfString(txtToUpdate)
-                                if (substringRange.location  == 0)
+                                if (substringRange.location == 0)
                                 {
                                     self.autocompletePlaces.append(curString)
                                 }

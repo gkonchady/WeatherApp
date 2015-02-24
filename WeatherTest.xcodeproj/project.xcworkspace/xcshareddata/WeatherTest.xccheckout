@@ -10,14 +10,14 @@
 	<string>WeatherTest</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>BBFBF3F66D25D63BA5D7EF550BF52CD7874966EE</key>
+		<key>3951647748EB243054AC9BB7CF9C72531423D66A</key>
 		<string>github.com:gkonchady/WeatherApp.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>WeatherTest.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>BBFBF3F66D25D63BA5D7EF550BF52CD7874966EE</key>
+		<key>3951647748EB243054AC9BB7CF9C72531423D66A</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
@@ -25,14 +25,14 @@
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>BBFBF3F66D25D63BA5D7EF550BF52CD7874966EE</string>
+	<string>3951647748EB243054AC9BB7CF9C72531423D66A</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>BBFBF3F66D25D63BA5D7EF550BF52CD7874966EE</string>
+			<string>3951647748EB243054AC9BB7CF9C72531423D66A</string>
 			<key>IDESourceControlWCCName</key>
 			<string>WeatherTest</string>
 		</dict>
