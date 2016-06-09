@@ -23,7 +23,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("test comment 4")
+        print("test comment 6")
         
         //Read url and key from your Settings plist file
         var myDict: NSDictionary?
