@@ -21,14 +21,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         //Read url and key from your Settings plist file
-        var myDict: NSDictionary?
+        /*var myDict: NSDictionary?
         if let path = NSBundle.mainBundle().pathForResource("Settings", ofType: "plist") {
             myDict = NSDictionary(contentsOfFile: path)
         }
         
         if let dict = myDict {
-            placesApiUrl = dict["Places API AutoComplete Url"] as String
-            placesApiKey = dict["Places API Key"] as String
+            placesApiUrl = dict["Places API AutoComplete Url"] as! String
+            placesApiKey = dict["Places API Key"] as! String
         }
         
         self.txtLocation.delegate = self
@@ -36,7 +36,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         autocompleteTableView.dataSource = self
         autocompleteTableView.scrollEnabled = true
         autocompleteTableView.hidden = true
-        self.view.addSubview(autocompleteTableView)
+        self.view.addSubview(autocompleteTableView)*/
         
     }
     
@@ -49,7 +49,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         // Dispose of any resources that can be recreated.
     }
 
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    /*override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         self.view.endEditing(true)
         autocompleteTableView.hidden = true
     }
@@ -103,7 +103,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             task.resume()
             autocompleteTableView.reloadData()
         }
-    }
+    }*/
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return autocompletePlaces.count

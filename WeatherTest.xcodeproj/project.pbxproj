@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		44CA66161D0A0765003B243E /* Settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 44CA66151D0A0765003B243E /* Settings.plist */; };
 		D74230801A64B62200AC5094 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D742307F1A64B62200AC5094 /* AppDelegate.swift */; };
 		D74230821A64B62200AC5094 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74230811A64B62200AC5094 /* MainViewController.swift */; };
 		D74230841A64B62200AC5094 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74230831A64B62200AC5094 /* SettingsViewController.swift */; };
@@ -17,7 +18,6 @@
 		D74230A21A64C47100AC5094 /* bak.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = D74230A11A64C47100AC5094 /* bak.jpeg */; };
 		D74230A41A67599F00AC5094 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D74230A31A67599F00AC5094 /* CoreLocation.framework */; };
 		D74230A61A675E4300AC5094 /* bak2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D74230A51A675E4300AC5094 /* bak2.jpg */; };
-		D7508DDA1A7DA7AE004E021F /* Settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7508DD91A7DA7AE004E021F /* Settings.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		44CA66151D0A0765003B243E /* Settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Settings.plist; sourceTree = "<group>"; };
 		D742307A1A64B62200AC5094 /* WeatherTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D742307E1A64B62200AC5094 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D742307F1A64B62200AC5094 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -45,7 +46,6 @@
 		D74230A11A64C47100AC5094 /* bak.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bak.jpeg; sourceTree = "<group>"; };
 		D74230A31A67599F00AC5094 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		D74230A51A675E4300AC5094 /* bak2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bak2.jpg; sourceTree = "<group>"; };
-		D7508DD91A7DA7AE004E021F /* Settings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Settings.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,7 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				D742307E1A64B62200AC5094 /* Info.plist */,
-				D7508DD91A7DA7AE004E021F /* Settings.plist */,
+				44CA66151D0A0765003B243E /* Settings.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -172,11 +172,13 @@
 		D74230721A64B62200AC5094 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Gaurav Konchady";
 				TargetAttributes = {
 					D74230791A64B62200AC5094 = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = 4NA6BYRJ53;
 					};
 					D74230901A64B62300AC5094 = {
 						CreatedOnToolsVersion = 6.1;
@@ -213,7 +215,7 @@
 				D742308C1A64B62200AC5094 /* LaunchScreen.xib in Resources */,
 				D74230A21A64C47100AC5094 /* bak.jpeg in Resources */,
 				D74230891A64B62200AC5094 /* Images.xcassets in Resources */,
-				D7508DDA1A7DA7AE004E021F /* Settings.plist in Resources */,
+				44CA66161D0A0765003B243E /* Settings.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,9 +358,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = WeatherTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -366,9 +371,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = WeatherTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

@@ -30,8 +30,8 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         }
         
         if let dict = myDict {
-            weatherApiUrl = dict["Weather API Url"] as String
-            weatherApiKey = dict["Weather API Key"] as String
+            weatherApiUrl = dict["Weather API Url"] as! String
+            weatherApiKey = dict["Weather API Key"] as! String
         }
         
         self.lblLocation.text = "Please wait..."
@@ -43,11 +43,11 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
             locationManager.distanceFilter = 100.0;
             locationManager.startUpdatingLocation()
         } else {
-            println("Location services are not enabled");
+            print("Location services are not enabled");
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    /*override func viewDidAppear(animated: Bool) {
         println("view appeared")
     }
 
@@ -124,7 +124,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         var timestamp = NSDateFormatter.localizedStringFromDate(NSDate(), dateStyle: .MediumStyle, timeStyle: .ShortStyle)
         timestamp = "Last Updated: " + timestamp
         return timestamp
-    }
+    }*/
     
 }
 
