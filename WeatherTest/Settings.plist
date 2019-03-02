@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
 	<key>Weather API Url</key>
-	<string>https://api.openweathermap.org/data/2.5/weather?units=imperial&amp;lat=</string>
+	<string></string>
 	<key>Weather API Key</key>
-	<string>cf844dedbdad442575a5fe3b2206d39b</string>
+	<string></string>
 </dict>
 </plist>
