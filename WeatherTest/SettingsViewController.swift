@@ -7,120 +7,82 @@
 //
 
 import UIKit
+import GooglePlaces
 
-class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+@available(iOS 9.0, *)
+class SettingsViewController: UIViewController {
 
-    @IBOutlet var txtLocation: UITextField!
-    let autocompleteTableView = UITableView(frame: CGRectMake(0, 120, 320, 120), style: UITableViewStyle.Plain)
-    
-    var placesApiUrl = ""
-    var placesApiKey = ""
-    var pastPlaces = [""]
-    var autocompletePlaces = [String]()
-    
+    var resultsViewController: GMSAutocompleteResultsViewController?
+    var searchController: UISearchController?
+    @IBOutlet weak var resultsViewContainer: UIStackView!
+    @IBOutlet weak var selectedLocation: UILabel!
+    var latitude = ""
+    var longitude = ""
+    var location = ""
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        //Read url and key from your Settings plist file
-        /*var myDict: NSDictionary?
-        if let path = NSBundle.mainBundle().pathForResource("Settings", ofType: "plist") {
-            myDict = NSDictionary(contentsOfFile: path)
-        }
-        
-        if let dict = myDict {
-            placesApiUrl = dict["Places API AutoComplete Url"] as! String
-            placesApiKey = dict["Places API Key"] as! String
-        }
-        
-        self.txtLocation.delegate = self
-        autocompleteTableView.delegate = self
-        autocompleteTableView.dataSource = self
-        autocompleteTableView.scrollEnabled = true
-        autocompleteTableView.hidden = true
-        self.view.addSubview(autocompleteTableView)*/
-        
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        self.txtLocation.becomeFirstResponder()
+
+        resultsViewController = GMSAutocompleteResultsViewController()
+        resultsViewController?.delegate = self
+
+        searchController = UISearchController(searchResultsController: resultsViewController)
+        searchController?.searchResultsUpdater = resultsViewController
+
+        let screenSize = UIScreen.main.bounds
+        let subView = UIView(frame: CGRect(x: 0, y: 65.0, width: screenSize.width, height: 45.0))
+
+        subView.addSubview((searchController?.searchBar)!)
+        view.addSubview(subView)
+        searchController?.searchBar.sizeToFit()
+        searchController?.hidesNavigationBarDuringPresentation = false
+
+        // When UISearchController presents the results view, present it in
+        // this view controller, not one further up the chain.
+        definesPresentationContext = true
+
+        resultsViewContainer.isHidden = true
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @IBAction func locationConfirmTapped(_ sender: UIButton) {
+        let vc: MainViewController = self.tabBarController?.viewControllers![0] as! MainViewController
+        vc.latitude = latitude
+        vc.longitude = longitude
+        vc.location = location
+        self.tabBarController?.selectedIndex = 0
     }
 
-    /*override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        self.view.endEditing(true)
-        autocompleteTableView.hidden = true
+}
+
+// Handle the user's selection.
+@available(iOS 9.0, *)
+extension SettingsViewController: GMSAutocompleteResultsViewControllerDelegate {
+    func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
+                           didAutocompleteWith place: GMSPlace) {
+        searchController?.isActive = false
+        selectedLocation.text = "Selected Location: " + place.name
+        resultsViewContainer.isHidden = false
+        // Do something with the selected place.
+        latitude = String(format: "%f", place.coordinate.latitude)
+        longitude = String(format: "%f", place.coordinate.longitude)
+        location = place.name
     }
-    
-    func textFieldDidBeginEditing(textField: UITextField) {
-        txtLocation.text = ""
+
+    func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
+                           didFailAutocompleteWithError error: Error){
+        // TODO: handle the error.
+        print("Error: ", error.localizedDescription)
     }
-    
-    func textFieldShouldReturn(textField:UITextField!) -> Bool {
-        txtLocation.resignFirstResponder()
-        autocompleteTableView.hidden = true
-        return true
+
+    // Turn the network activity indicator on and off again.
+    func didRequestAutocompletePredictions(forResultsController resultsController: GMSAutocompleteResultsViewController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
     }
-    
-    func textField(textField: UITextField!, shouldChangeCharactersInRange range: NSRange, replacementString string: String!) -> Bool {
-        var txtAfterUpdate: NSString = self.txtLocation.text as NSString
-        autocompleteTableView.hidden = false
-        txtAfterUpdate = txtAfterUpdate.stringByReplacingCharactersInRange(range, withString: string)
-        searchAutoCompleteWithResults(txtAfterUpdate)
-        return true
+
+    func didUpdateAutocompletePredictions(forResultsController resultsController: GMSAutocompleteResultsViewController) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
     }
-    
-    func searchAutoCompleteWithResults(txtToUpdate:String){
-        //if string length is greater than one
-        if countElements(txtToUpdate) > 1 {
-            var placesUrl = placesApiUrl + txtToUpdate + "&types=geocode&key=" + placesApiKey
-            var url = NSURL(string: placesUrl)
-            let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
-                if let httpRes = response as? NSHTTPURLResponse {
-                    if httpRes.statusCode == 200 {
-                        var dict: NSDictionary! = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
-                        if let predictions = dict["predictions"] as? NSArray {
-                            self.autocompletePlaces.removeAll(keepCapacity: false)
-                            for place in predictions{
-                                var curString = place["description"] as NSString
-                                var myString:NSString! = curString
-                                myString = myString.lowercaseString
-                                var substringRange :NSRange! = myString.rangeOfString(txtToUpdate)
-                                if (substringRange.location == 0)
-                                {
-                                    self.autocompletePlaces.append(curString)
-                                }
-                            }
-                        }
-                     }
-                } else {
-                    println("error \(error)") // print the error!
-                }
-            }
-            
-            task.resume()
-            autocompleteTableView.reloadData()
-        }
-    }*/
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return autocompletePlaces.count
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let autoCompleteRowIdentifier = "AutoCompleteRowIdentifier"
-        let cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: autoCompleteRowIdentifier)
-        cell.textLabel!.text = autocompletePlaces[indexPath.row]
-        return cell
-    }
-    
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let selectedCell : UITableViewCell = tableView.cellForRowAtIndexPath(indexPath)!
-        txtLocation.text = selectedCell.textLabel!.text
-        autocompleteTableView.hidden = true
-        self.view.endEditing(true)
-    }
+
+
 }
 

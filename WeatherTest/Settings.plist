@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-   Settings.plist
-   WeatherTest
-
-   Created by Konchady, Gaurav on 6/9/16.
-   Copyright (c) 2016 Gaurav Konchady. All rights reserved.
--->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
-    
-    </dict>
+<dict>
+	<key>Weather API Url</key>
+	<string>https://api.openweathermap.org/data/2.5/weather?units=imperial&amp;lat=</string>
+	<key>Weather API Key</key>
+	<string>cf844dedbdad442575a5fe3b2206d39b</string>
+</dict>
 </plist>

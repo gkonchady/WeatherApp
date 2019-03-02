@@ -19,15 +19,16 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
     
     var weatherApiUrl = ""
     var weatherApiKey = ""
+    var latitude = ""
+    var longitude = ""
+    var location = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("test comment 11")
-        
         //Read url and key from your Settings plist file
         var myDict: NSDictionary?
-        if let path = NSBundle.mainBundle().pathForResource("Settings", ofType: "plist") {
+        if let path = Bundle.main.path(forResource: "Settings", ofType: "plist") {
             myDict = NSDictionary(contentsOfFile: path)
         }
         
@@ -37,7 +38,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         }
         
         self.lblLocation.text = "Please wait..."
-        
+
         if (CLLocationManager.locationServicesEnabled()) {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -48,85 +49,104 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
             print("Location services are not enabled");
         }
     }
-    
-    /*override func viewDidAppear(animated: Bool) {
-        println("view appeared")
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationWillEnterForeground(_:)),
+                                               name: UIApplication.willEnterForegroundNotification,
+                                               object: nil)
+        if !(latitude.isEmpty && longitude.isEmpty && location.isEmpty) {
+            lblLocation.text = location
+            getTemperatureFromLatLong(lat: latitude, lon: longitude)
+        }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
     }
-    
-    @IBAction func refreshWeather(sender: UIButton) {
+
+    @objc func applicationWillEnterForeground(_ notification: NSNotification) {
+        locationManager.startUpdatingLocation()
+    }
+
+    @IBAction func refreshWeather(_ sender: UIButton) {
         locationManager.startUpdatingLocation()
     }
     
     // CoreLocation Delegate Methods
-    func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         locationManager.stopUpdatingLocation()
-        if ((error) != nil) {
-            print(error)
-        }
+        debugPrint(error.localizedDescription)
     }
     
-    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-        var locationArray = locations as NSArray
-        var locationObj = locationArray.lastObject as CLLocation
-        var coord = locationObj.coordinate
+    internal func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let locationArray = locations as NSArray
+        let locationObj = locationArray.lastObject as! CLLocation
+        let coord = locationObj.coordinate
         
-        var latitude:String = String(format: "%f", coord.latitude)
-        var longitude:String = String(format: "%f", coord.longitude)
+        let latitude:String = String(format: "%f", coord.latitude)
+        let longitude:String = String(format: "%f", coord.longitude)
         
         CLGeocoder().reverseGeocodeLocation(locationObj, completionHandler: { (placemarks, error) -> Void in
             if((error) != nil){
-                println("error:  \(error)")
-            }else{
-                let p = CLPlacemark(placemark: placemarks?[0] as CLPlacemark)
-                self.lblLocation.text = p.subLocality + ", " + p.administrativeArea
+                debugPrint("error:  \(String(describing: error))")
+            } else {
+                var pm: CLPlacemark!
+                pm = placemarks?[0]
+                var address = ""
+                if let city = pm?.addressDictionary?["City"] as? String {
+                    address += city + ", "
+                }
+                if let state = pm?.addressDictionary?["State"] as? String {
+                    address += state
+                }
+                self.lblLocation.text = address
             }
         })
 
-        
         locationManager.stopUpdatingLocation()
         
-        getTemperatureFromLatLong(latitude, lon: longitude)
+        getTemperatureFromLatLong(lat: latitude, lon: longitude)
     }
     
     func getTemperatureFromLatLong(lat:String, lon:String){
-        var weatherUrl = weatherApiUrl + lat + "&lon=" + lon + "&APPID=" + weatherApiKey
-        var url = NSURL(string: weatherUrl)
+        let weatherUrl = weatherApiUrl + lat + "&lon=" + lon + "&APPID=" + weatherApiKey
+        let url = NSURL(string: weatherUrl)
         
-        let task = NSURLSession.sharedSession().dataTaskWithURL(url!) {(data, response, error) in
-            if let httpRes = response as? NSHTTPURLResponse {
+        let task = URLSession.shared.dataTask(with: url! as URL) {(data, response, error) in
+            if let httpRes = response as? HTTPURLResponse {
                 if httpRes.statusCode == 200 {
-                    var dict: NSDictionary! = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
-                    var tempdict = dict.valueForKey("main") as NSDictionary
-                    var temperature  = self.convertKelvinToFahrenheit(tempdict["temp"] as Double)
-                    dispatch_async(dispatch_get_main_queue()){
-                        //self.lblLocation.text = dict.valueForKey("name") as? String
-                        self.lblTemperature.text = temperature
-                        self.lblLastUpdated.text = self.getTimestamp()
+                    let json = try? JSONSerialization.jsonObject(with: data!, options: [])
+                    if let dict = json as? [String: Any] {
+                        let tempdict = dict["main"] as? NSDictionary
+                        let temperatureVal = tempdict?["temp"] as? Double
+                        let temperature  = self.formatTemperature(temp: temperatureVal!)
+                        DispatchQueue.main.async(){
+                            self.lblTemperature.text = temperature
+                            self.lblLastUpdated.text = self.getTimestamp()
+                        }
                     }
                 }
             } else {
-                println("error \(error)") // print the error!
+                debugPrint("error \(String(describing: error))") // print the error!
             }
         }
             
         task.resume()
     }
     
-    func convertKelvinToFahrenheit(temp: Double) -> String{
-        var fahrenheitTemp = (temp - 273.15)*1.8 + 32
-        return String(format: "%dºF", Int(round(fahrenheitTemp)))
+    func formatTemperature(temp: Double) -> String {
+        return String(format: "%dºF", Int(round(temp)))
     }
     
     func getTimestamp() -> String {
-        var timestamp = NSDateFormatter.localizedStringFromDate(NSDate(), dateStyle: .MediumStyle, timeStyle: .ShortStyle)
+        var timestamp = DateFormatter.localizedString(from: NSDate() as Date, dateStyle: .medium, timeStyle: .short)
         timestamp = "Last Updated: " + timestamp
         return timestamp
-    }*/
+    }
     
 }
 
